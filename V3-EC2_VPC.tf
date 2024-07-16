@@ -26,15 +26,16 @@ resource "aws_security_group" "allow_ssh" {
   }
 }
 
-resource "aws_instance" "shelly-server" {
+resource "aws_instance" "web-server" {
   ami           = "ami-04a81a99f5ec58529"
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
   subnet_id = aws_subnet.first-vpc-public_subent_01.id
+  for_each = toset(["Jenkins-Master","Jenkins-Slave", "Ansible"])
+   tags = {
+     Name = "${each.key}"
+   }
 
-  tags = {
-    Name = "shelly-server"
-  }
 }
 
   resource "aws_vpc" "first-vpc" {
